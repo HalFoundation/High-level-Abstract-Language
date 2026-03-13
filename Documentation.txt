@@ -35,7 +35,7 @@ Using an ‘if’ statement:
 | :Path:End
 
 Using a ‘ranged’ loop:
-| :Path:Go <Variable> (<StartValue> -> <EndValue>, <Step>): #Step defaults to 1 when omitted.#
+| :Path:Go <Variable> (<StartInteger> -> <EndInteger>, <Step>): #Step defaults to 1 when omitted.#
 |     <...>
 | :Path:Loop:End
 
@@ -178,6 +178,8 @@ Tan(<Integer>) => Tangent of an angle.
 ArcTan(<Integer>) => Inverse tangent.
 Root(<Integer>, <Integer>) => The root of degree <Integer> of <Integer>.
 Rand(<LowerBound> -> <UpperBound>, <Step>) => Random number
+Round(<Integer>, <Precision>) => Rounds <Integer> to the specified number of decimal places. If <Precision> is omitted, it defaults to 0.
+Round(<Integer>, -> <Precision>) => Rounds <Integer> to <Precision> significant figures.
 Pi => Returns the value of pi.
 E => Returns Euler's Number.
 
@@ -205,28 +207,39 @@ Comparative operators.
 < => Less than.
 > => Greater than.
 
+File handling.
+"<FileName>":File:Read => Allocates the content of <FileName> to a variable.
+"<FileName>":File:Read[-> <Integer>] => Only allocates content up to line <Integer>.
+"<FileName>":File:Read[<StartInteger> -> <EndInteger>] => Same as before, but with a starting line.
+"<Text>" -> "<FileName>":File:Write => Overwrites data from <FileName> with new data specified by <Text>.
+"<Text>" -> "<FileName>":File:Write+ => Appends the new data to <FileName>.
+"<FileName>":File:Create => Creates the file <FileName> if it does not exist.
+
+<FileName> can also be replaced with a more specific file location.
+
 Built in functions.
 Time:
 Time(<Integer>) => Set a timer
 
 For integer values:
 -1 => Stop the timer
-0 – any => Sets the value by which it increments every second.
+0 and above => Sets the value by which it increments every second.
 Values such as 1.000 => Specifies that the timer increments by 1 every second, but milliseconds are not omitted.
 
-Time(<StartInteger> -> <TargetInteger>) <- Waits for timer to reach <TargetInteger>, then continues code execution.
+Time(<StartInteger> -> <TargetInteger>) => Waits for timer to reach <TargetInteger>, then continues code execution.
 
 Size:
 <Variable>:Size => Returns the length of a list or the number of characters in a value.
+<Variable>:Size:Bytes => Returns the number of bytes taken up by a value in memory.
 
 Formats.
 | <Value>:Format:<Syntax> #Formats the value using the rules specified below.#
 
 <Syntax> =
-	Upper <= Converts lower case characters to upper case.
-	Lower <= Converts upper case characters to lower case.
-	Lower[<Index> -> <Index>]:Upper[<Index> -> <Index>] <= Partially changes the case of the string, depending on what is specified.
-	Abs <= Changes a negative integer to a positive integer.
+	Upper => Converts lower case characters to upper case.
+	Lower => Converts upper case characters to lower case.
+	Lower[<Index> -> <Index>]:Upper[<Index> -> <Index>] => Partially changes the case of the string, depending on what is specified.
+	Abs => Changes a negative integer to a positive integer.
 
 Debug.
 Command usage: hal debg <File>
