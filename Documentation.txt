@@ -1,0 +1,301 @@
+H.A.L (High-level Abstract Language)
+Welcome to the intuitive H.A.L handbook, where the aims and rules of H.A.L are defined.
+
+Adam in a garden, intentions known, reaching for an apple. The punishment is inflicted on himself; he will live by the consequences of his actions. Or the apple will fall, or not.
+
+Notation.
+Text enclosed in angle brackets '<>' indicates placeholder values to be replaced with actual code or data in examples.
+
+'|' is indicative of a line number, so is omitted from the syntax.
+
+Comments.
+Multi-line and single-line comments are the same.
+
+| #A comment uses a hash mark symbol on both sides.#
+
+Conditions.
+Using a ‘match’ statement:
+| :Path:Go <Variable>:
+| <VariableValue>:
+| 	<...>
+| <VariableValue>:
+|	<...>
+| _: #Runs when none of the other conditions are met.#
+| 	<...>
+| :Path:End
+
+Using an ‘if’ statement:
+| :Path:Go
+| <Condition>:
+| 	<...>
+| <Condition>:
+| 	<...>
+| _:
+| 	<...>
+| :Path:End
+
+Using a ‘ranged’ loop:
+| :Path:Go <Variable> (<StartValue> -> <EndValue>, <Step>): #Step defaults to 1 when omitted.#
+|     <...>
+| :Path:Loop:End
+
+Using a ‘conditional’ loop:
+| :Path:Go
+| <Condition>:
+| 	<...>
+| :Path:Loop:End
+
+You do not have to use multiple conditions when you are looping.
+
+Error handling.
+With generic error handling:
+| :Path:Go:Err #No ‘:Err’ arguments mean all generic errors are captured.#
+|	<...>
+| _: #This is the path for the error message or code run after the error.#
+|	<...>
+| :Path:Loop:End #Loops until the error condition resolves. Intended only for input errors, other error types will not self-correct and will continually loop.#
+
+With specific error handling:
+| :Path:Go:Err <ErrorType>:
+|	<...>
+| <ErrorType>:
+|	<...>
+| _: #This is the default path when no error is raised.#
+|	<...>
+| :Path:End
+
+<ErrorType> =
+	Syntax,
+	Type,
+	InputType,
+	FileAbsent,
+	ZeroDivision,
+	KeyHalt,
+	Underflow,
+	Overflow
+
+Data types.
+Int => Integer.
+Float => Float.
+Str => String.
+Bool => Boolean.
+
+Unsigned Values:
+<DataType>+8 => 8-bit.
+<DataType>+32 => 32-bit.
+<DataType>+64 => 64-bit.
+<DataType>+128 => 128-bit.
+
+Signed Values:
+<DataType>8 => 8-bit.
+<DataType>32 => 32-bit.
+<DataType>64 => 64-bit.
+<DataType>128 => 128-bit.
+
+| <Variable>, <DataType> = <Data>:Mut
+
+':Mut' => Variable is mutable.
+Without ':Mut' => Variable is immutable.
+
+For immutable variables, <DataType> above can be omitted; the compiler can decide what the variable type is.
+
+Lists and arrays.
+With ‘:Mut’:
+<Variable> = [<Data>,<Data>,<Data>]:Mut => 1d array.
+<Variable> = [[<Data>,<Data>],[<Data>,<Data>],[<Data>,<Data>]]:Mut => 2d array.
+<Variable> = [
+    [<Data>,<Data>],
+    [<Data>,<Data>],
+    [<Data>,<Data>]
+]:Mut => 2d array.
+<Variable> = [<Data>,<Data>,<Data>,+]:Mut => '+' operator demonstrating size is ambiguous.
+
+Without ‘:Mut’:
+<Variable> = [<Data>,<Data>,<Data>] => Values are locked and cannot be changed.
+<Variable> = [<Data>,<Data>,<Data>,+] => Size is still ambiguous, but any values added cannot be changed and are locked to an index.
+
+<Variable>[<Integer> -> <Integer>] => Index 1 to 3 in a list.
+<Variable>[<Integer>] => Index <Integer> only.
+<Variable>[-1] => Last index only.
+<Variable>[-1 -> 0] => Everything in reverse order.
+<Variable>[0 -> -1] => Everything in order.
+<Variable>[<Integer>] = <Data> => Set the value in index <Integer> to <Data>.
+<Variable>[:<Data>:] = <Data> => Replaces all positions taken by <Data> with the value <Data>.
+<Variable>[:<StartData>: -> :<EndData>:] = [<Data>,<Data>,<Data>] => Replaces values from the first occurrence of <StartData> to that of <EndData> with a specified extract. If the extract does not fit, values in that range are removed.
+<Variable>[<Integer>] = [] => Clear index <Integer>.
+<Variable>[<Integer>] = [-1] => Deletes index <Integer> and closes the gap if it is a list.
+<Variable>[] = [] => Clears all the data in <Variable> without closing gaps.
+<Variable>[] = [-1] => Clears all the data in <Variable> and closes the gaps if it is a list.
+<Variable>[:<Data>:] = [-1] => Removes all instances of <Data>.
+<Variable>[<Integer> -> ] = <Data> => Insert after index <Integer>.
+<Variable>[+] = <Data> => Adds new data to the end of a list.
+
+Inputs and outputs.
+| <Variable>, Str = “<Text>”:In #Inputs from the user are hidden.#
+| <Variable>, Str = “<Text>”:In:Out #Inputs from the user are displayed.#
+
+To return a value, use the ending ‘:Return’.
+
+| “<Text>”:Out #Statement is displayed to the terminal.#
+| “<Text> :<Variable>: <Text>”:Out #Statement with <Variable> is displayed to the terminal.#
+| “<Text> ::<Variable>:: <Text>”:Out #Statement is displayed using the literal text :<Variable>: without replacing it with the value of <Variable>.#
+
+Note: Using double colons ‘::’ around a variable name inside quotes disables variable substitution and displays the text exactly as written.
+
+Functions and procedures.
+| Func <Function>(<Variable>, <Variable>): #Parameters are defined.#
+| 	<Variable>
+| 	<Variable>
+|	:Public #Internal variables above are public, meaning they modify other variables out of the function scope. Local variables can only be used within the function.#
+|	<...>
+|
+| <Function>(<Variable>, <Variable>) #Calls the function.#
+
+By default, variables within a function are local.
+
+Objects.
+| Obj <Object> (<Variable>, <Variable>):
+| 	<...>
+|	Func <Function>(<Variable>, <Variable>):
+|		<...>
+| <Variable> = <Object>(<Variable>, <Variable>) #Initializes the new object.#
+| <Variable>, <Function>(<Variable>, <Variable>)
+
+Operators.
+^ => Exponentiation.
+* => Multiplication.
+/ => Division.
++ => Addition.
+- => Subtraction.
+<Integer> Div <Integer> => Integer division.
+<Integer> Mod <Integer> => Modulus.
+Log(<Integer>, <Integer>) => Logarithm.
+Cos(<Integer>) => Cosine of an angle.
+ArcCos(<Integer>) => Inverse cosine.
+Sin(<Integer>) => Sine of an angle.
+ArcSin(<Integer>) => Inverse sine.
+Tan(<Integer>) => Tangent of an angle.
+ArcTan(<Integer>) => Inverse tangent.
+Root(<Integer>, <Integer>) => The root of degree <Integer> of <Integer>.
+Rand(<LowerBound> -> <UpperBound>, <Step>) => Random number
+Pi => Returns the value of pi.
+E => Returns Euler's Number.
+
+Assignment operators.
+<Variable> =^ <Integer>
+<Variable> =* <Integer>
+<Variable> =/ <Integer>
+<Variable> =+ <Integer>
+<Variable> =- <Integer>
+
+Logical operators.
+And => ‘True’ when both conditions are met.
+Or => ‘True’ when one condition is met.
+Not => ‘True’ when a condition is ‘False’.
+XOr => Like ‘OR’ but is ‘False’ when both conditions are true.
+All => 'True' when all values in a list are 'True'.
+Any => 'True' when any value in a list is 'True'.
+XAny => Like 'Any' but is 'False' when all values in a list are 'True'.
+
+Comparative operators.
+/= => Not equal.
+== => Equal.
+<= => Less than or equal to.
+>= => Greater than or equal to.
+< => Less than.
+> => Greater than.
+
+Built in functions.
+Time:
+Time(<Integer>) => Set a timer
+
+For integer values:
+-1 => Stop the timer
+0 – any => Sets the value by which it increments every second.
+Values such as 1.000 => Specifies that the timer increments by 1 every second, but milliseconds are not omitted.
+
+Time(<StartInteger> -> <TargetInteger>) <- Waits for timer to reach <TargetInteger>, then continues code execution.
+
+Size:
+<Variable>:Size => Returns the length of a list or the number of characters in a value.
+
+Formats.
+| <Value>:Format:<Syntax> #Formats the value using the rules specified below.#
+
+<Syntax> =
+	Upper <= Converts lower case characters to upper case.
+	Lower <= Converts upper case characters to lower case.
+	Lower[<Index> -> <Index>]:Upper[<Index> -> <Index>] <= Partially changes the case of the string, depending on what is specified.
+	Abs <= Changes a negative integer to a positive integer.
+
+Debug.
+Command usage: hal debg <File>
+
+Single line:
+| <...>:Omit #Ignores current line unless code is run in debug mode.#
+
+Multiple lines:
+| :Path:Go:Omit
+| <...>
+| :Path:End:Omit #Ignores code up to this point.#
+
+Error handling:
+| :Omit:Err #Ignores the line if an error is produced by it, works without debug mode.#
+
+Error messages.
+Example:
+In main.fhal, within:main():
+	3. <Variable>, Int+64 = “<Text>”:Mut
+	4. <Variable>, Int+32 = “<Text>”:iMut
+Found:
+	3. Type Error
+	4. Type Error
+	4. Syntax Error
+Suggestions:
+	3. Int+64 => Str
+	4. Int+32 => Str
+	4. ‘:iMut’ is alien to H.A.L.
+Result:
+	Line 3,4 caused an error.
+	Line 7 referenced the function with an error.
+
+Garbage collection.
+H.A.L uses a borrow checker type system by default.
+
+| :Path:Go:Garbage #Start using the garbage collector and remove limits.#
+| <...>
+| :Path:End:Garbage
+
+Compiling.
+Command usage: hal comp <File>
+
+Interpretation.
+As well as compiling, you can interpret code written in H.A.L.
+
+Command usage: hal intp <File>
+
+H.A.L also allows the mix of compiled and interpreted code in the same file.
+
+Command usage: hal run <File> ← Runs any compiled segments, while sections that are not compiled are interpreted.
+
+| :Path:Go:Interpret #Code is not compiled in this range and interpretation starts.#
+| <...>
+| :Path:End:Interpret #End of interpretation for this block of code.#
+
+Warnings.
+Warnings about dubious code can be suppressed with the following.
+
+| :Path:Go:Rebel #Prevents a warning being raised for a block of code.#
+| <...>
+| :Path:End:Rebel #Allows warnings to be raised again.#
+
+Modules.
+Imported modules are to be placed in the .fmhal file.
+
+[<Module>, <Provider>, <LocalName>] <== <TargetFile> (or ‘All’)
+
+<TargetFile> is used to specify the file using the module in a project.
+‘All’ is to use the module in every .fhal file in the project.
+
+Personal statement.
+In a world where system requirements keep going, H.A.L aims to create something that will drop them to the floor. The project must be open source to stay alive. In a free world, people should know what is right and be defaulted to this path but should also have the option to do otherwise.
