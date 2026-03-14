@@ -8,7 +8,7 @@ Text enclosed in angle brackets '<>' indicates placeholder values to be replaced
 
 '|' is indicative of a line number, so is omitted from the syntax.
 
-'<Variable>' must be replaced with a name starting with a lowercase letter.
+'<Variable>', '<Object>', and '<Function>' must be replaced with a name starting with a lowercase letter.
 
 Comments.
 Multi-line and single-line comments are the same.
