@@ -238,8 +238,8 @@ Formats.
 | <Value>:Format:<Syntax> #Formats the value using the rules specified below.#
 
 <Syntax> =
-	Upper => Converts lower case characters to upper case.
-	Lower => Converts upper case characters to lower case.
+	Upper => Converts lower case characters to uppercase.
+	Lower => Converts upper case characters to lowercase.
 	Lower[<Index> -> <Index>]:Upper[<Index> -> <Index>] => Partially changes the case of the string, depending on what is specified.
 	Abs => Changes a negative integer to a positive integer.
 
